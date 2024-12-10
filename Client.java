@@ -16,7 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-class Client extends JFrame{
+class Client extends JFrame {
 
     Socket socket;
 
@@ -28,8 +28,7 @@ class Client extends JFrame{
     private JTextField messageInput = new JTextField();
     private Font font = new Font("Roboto", Font.PLAIN, 20);
 
-
-    public Client(){
+    public Client() {
         try {
             System.out.println("Sending request to server");
             socket = new Socket("127.0.0.1", 7777);
@@ -50,9 +49,9 @@ class Client extends JFrame{
         }
     }
 
-    private void createGUI(){
+    private void createGUI() {
         this.setTitle("Client Messager[END]");
-        this.setSize(500,600);
+        this.setSize(500, 600);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -62,24 +61,22 @@ class Client extends JFrame{
         messageArea.setEditable(false);
         JScrollPane scrollPaneMessageArea = new JScrollPane(messageArea);
 
-
         // heading.setIcon(new ImageIcon("img.png"));
         heading.setFont(font);
         heading.setHorizontalAlignment(SwingConstants.CENTER);
         heading.setHorizontalTextPosition(SwingConstants.CENTER);
         heading.setVerticalTextPosition(SwingConstants.BOTTOM);
-        heading.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        heading.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         this.setLayout(new BorderLayout());
         this.add(heading, BorderLayout.NORTH);
         this.add(scrollPaneMessageArea, BorderLayout.CENTER);
         this.add(messageInput, BorderLayout.SOUTH);
 
-
         this.setVisible(true);
     }
 
-    private void handleEvents(){
+    private void handleEvents() {
         messageInput.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -93,27 +90,29 @@ class Client extends JFrame{
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if( e.getKeyCode() == 10){
+                if (e.getKeyCode() == 10) {
                     // System.out.println("You have pressed enter");
                     String contentToSend = messageInput.getText();
-                    messageArea.append("Me : " + contentToSend + "\n");
-                    writer.println(contentToSend);
-                    writer.flush();
-                    messageInput.setText("");
+                    if (!contentToSend.trim().isEmpty()) {
+                        messageArea.append("Me : " + contentToSend + "\n");
+                        writer.println(contentToSend);
+                        writer.flush();
+                        messageInput.setText("");
+                    }
                 }
             }
-            
+
         });
     }
 
-    public void startReading(){
-        Runnable r1=()->{
+    public void startReading() {
+        Runnable r1 = () -> {
             System.out.println("reader started...");
 
-            try {    
-                while (true) { 
+            try {
+                while (true) {
                     String msg = reader.readLine();
-                    if(msg.equals("exit")){
+                    if (msg.equals("exit")) {
                         System.out.println("Server terminated the chat");
                         JOptionPane.showMessageDialog(this, "Server termonated the chat");
                         messageInput.setEnabled(false);
@@ -122,6 +121,7 @@ class Client extends JFrame{
                     }
                     // System.out.println("Server : " + msg);
                     messageArea.append("Server : " + msg + "\n");
+                    messageArea.setCaretPosition(messageArea.getDocument().getLength());
                 }
             } catch (Exception e) {
                 // e.printStackTrace();
@@ -130,18 +130,18 @@ class Client extends JFrame{
         };
         new Thread(r1).start();
     }
-    
-    public void startWriting(){
-        Runnable r2=()->{
+
+    public void startWriting() {
+        Runnable r2 = () -> {
             try {
                 System.out.println("writer started...");
-                while(!socket.isClosed()){
+                while (!socket.isClosed()) {
                     BufferedReader reader1 = new BufferedReader(new InputStreamReader(System.in));
                     String content = reader1.readLine();
                     writer.println(content);
                     writer.flush();
 
-                    if(content.equals("exit")){
+                    if (content.equals("exit")) {
                         socket.close();
                         break;
                     }
