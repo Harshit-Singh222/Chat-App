@@ -25,7 +25,7 @@ class Server extends JFrame {
     BufferedReader reader;
     PrintWriter writer;
 
-    private JLabel heading = new JLabel("Serevr Area");
+    private JLabel heading = new JLabel("Server Area");
     private JTextArea messageArea = new JTextArea();
     private JTextField messageInput = new JTextField();
     private Font font = new Font("Roboto", Font.PLAIN, 20);
@@ -122,7 +122,7 @@ class Server extends JFrame {
                         socket.close();
                         break;
                     }
-                    messageArea.append("Server : " + msg + "\n");
+                    messageArea.append("Client : " + msg + "\n");
                     messageArea.setCaretPosition(messageArea.getDocument().getLength());
                 }
             } catch (Exception e) {
